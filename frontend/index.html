@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard AI — 9 Adımlı Phishing Tespit Sistemi</title>
+    <meta name="description" content="Stilometrik + Dual-Branch Stacking tabanlı 9 adımlı phishing tespit sistemi">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #020617;
+            --bg-secondary: #0F172A;
+            --bg-card: #1E293B;
+            --bg-card-hover: #263348;
+            --border: #1e3a5f;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a78bfa;
+            --accent-green: #22C55E;
+            --accent-red: #ef4444;
+            --accent-yellow: #fbbf24;
+            --accent-cyan: #06b6d4;
+            --gradient-1: linear-gradient(135deg, #38bdf8, #a78bfa);
+            --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
+            --gradient-safe: linear-gradient(135deg, #22C55E, #16a34a);
+            --glass: rgba(15, 23, 42, 0.85);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --neon-blue: 0 0 20px rgba(56,189,248,0.4);
+            --neon-green: 0 0 20px rgba(34,197,94,0.4);
+            --neon-red: 0 0 20px rgba(239,68,68,0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Fira Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, .metric-value, .verdict-text, .nav-btn {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Animated BG */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(56,189,248,0.07) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(167,139,250,0.07) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 80%, rgba(34,197,94,0.05) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+            z-index: -1;
+        }
+        @keyframes bgFloat { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-2%,2%)} }
+        /* Scanline overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Header */
+        .header {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header h1 { font-size: 1.3rem; font-weight: 700; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
+        .header .status { display: flex; gap: 12px; align-items: center; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s infinite; box-shadow: var(--neon-green); }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+        .nav { display: flex; gap: 4px; background: var(--bg-secondary); border-radius: 12px; padding: 4px; border: 1px solid var(--border); }
+        .nav-btn {
+            padding: 8px 20px; border: none; border-radius: 10px;
+            background: transparent; color: var(--text-secondary);
+            cursor: pointer; font-weight: 500; font-size: 0.82rem;
+            transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn.active { background: var(--gradient-1); color: white; box-shadow: var(--neon-blue); }
+        .nav-btn:hover:not(.active) { color: var(--text-primary); background: var(--bg-card); }
+
+        /* Main */
+        .main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+        .page { display: none; animation: fadeIn 0.4s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+        .card:hover { border-color: var(--accent-blue); box-shadow: var(--shadow), var(--neon-blue); }
+        .card-title svg { width: 18px; height: 18px; opacity: 0.8; }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+        input, textarea {
+            width: 100%; padding: 12px 16px;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text-primary);
+            font-family: inherit; font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus { outline: none; border-color: var(--accent-blue); }
+        textarea { resize: vertical; min-height: 140px; }
+        .btn-primary {
+            width: 100%; padding: 14px;
+            background: var(--gradient-1); border: none;
+            border-radius: 12px; color: white;
+            font-size: 1rem; font-weight: 600; font-family: 'Fira Code', monospace;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(56,189,248,0.35); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-secondary {
+            padding: 14px 28px; border: 1px solid var(--border);
+            border-radius: 12px; color: var(--text-primary);
+            background: var(--bg-card); font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        /* Result */
+        .result-panel { margin-top: 24px; animation: slideUp 0.5s; }
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .verdict-banner {
+            padding: 24px; border-radius: var(--radius);
+            text-align: center; margin-bottom: 20px;
+        }
+        .verdict-banner.phishing { background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.1)); border: 1px solid rgba(239,68,68,0.3); }
+        .verdict-banner.safe { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.1)); border: 1px solid rgba(16,185,129,0.3); }
+        .verdict-banner.uncertain { background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.1)); border: 1px solid rgba(245,158,11,0.3); }
+        .verdict-icon { font-size: 3rem; margin-bottom: 8px; }
+        .verdict-text { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; }
+        .verdict-sub { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+
+        /* Metrics Grid */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .metric-card:hover { transform: translateY(-3px); border-color: var(--accent-blue); }
+        .metric-value { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+        .metric-label { font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Pipeline Visual */
+        .pipeline-flow {
+            display: flex; align-items: center; gap: 8px;
+            overflow-x: auto; padding: 16px 0;
+            flex-wrap: wrap;
+        }
+        .pipeline-step {
+            padding: 8px 14px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 500;
+            white-space: nowrap;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+        }
+        .pipeline-step.active { background: rgba(59,130,246,0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
+        .pipeline-step.skipped { opacity: 0.35; }
+        .pipeline-arrow { color: var(--text-secondary); font-size: 0.8rem; }
+
+        /* Evaluate page */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 40px; text-align: center;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .upload-zone:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.05); }
+        .upload-zone input { display: none; }
+        .eval-metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 24px; }
+        .eval-card {
+            background: var(--bg-card); border-radius: 12px; padding: 20px;
+            border-top: 3px solid var(--accent-blue);
+        }
+        .eval-card .val { font-size: 1.8rem; font-weight: 800; }
+        .eval-card .lbl { font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px; font-weight: 600; }
+        .eval-desc { font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px; opacity: 0.7; border-top: 1px solid var(--border); padding-top: 6px; }
+        .eval-card.loaded { animation: cardPop 0.4s ease; }
+        @keyframes cardPop { 0%{transform:scale(0.95);opacity:0.5} 100%{transform:scale(1);opacity:1} }
+
+        /* Dataset Pool */
+        .ds-pool-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+        .ds-pool-title { font-size:1rem; font-weight:700; display:flex; align-items:center; gap:8px; }
+        .ds-pool-badge { font-size:0.7rem; background:rgba(56,189,248,0.15); color:var(--accent-blue); padding:3px 10px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); font-family:'Fira Code',monospace; }
+        .ds-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+        .ds-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; padding:18px; transition:all 0.3s; position:relative; overflow:hidden; }
+        .ds-card:hover { border-color:var(--accent-blue); transform:translateY(-2px); box-shadow:var(--neon-blue); }
+        .ds-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--ds-color,var(--accent-blue)); }
+        .ds-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+        .ds-name { font-weight:700; font-size:0.95rem; font-family:'Fira Code',monospace; }
+        .ds-badge { font-size:0.65rem; padding:2px 8px; border-radius:6px; font-weight:600; }
+        .ds-badge.trained { background:rgba(34,197,94,0.15); color:var(--accent-green); }
+        .ds-badge.custom { background:rgba(167,139,250,0.15); color:var(--accent-purple); }
+        .ds-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+        .ds-stat { background:var(--bg-primary); border-radius:8px; padding:8px 10px; }
+        .ds-stat-val { font-size:1rem; font-weight:800; font-family:'Fira Code',monospace; }
+        .ds-stat-lbl { font-size:0.65rem; color:var(--text-secondary); margin-top:2px; }
+        .ds-bar { height:6px; border-radius:3px; background:var(--bg-primary); overflow:hidden; margin-bottom:8px; }
+        .ds-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent-red),var(--accent-yellow)); transition:width 1s ease; }
+        .ds-source { font-size:0.72rem; color:var(--text-secondary); }
+        .ds-add-btn { display:flex; align-items:center; gap:8px; padding:10px 18px; border:1px dashed var(--accent-purple); border-radius:10px; background:rgba(167,139,250,0.05); color:var(--accent-purple); cursor:pointer; font-size:0.85rem; font-weight:600; transition:all 0.2s; }
+        .ds-add-btn:hover { background:rgba(167,139,250,0.12); border-style:solid; }
+        .ds-remove { position:absolute; top:10px; right:10px; background:rgba(239,68,68,0.15); border:none; border-radius:6px; color:var(--accent-red); cursor:pointer; font-size:0.7rem; padding:2px 6px; opacity:0; transition:opacity 0.2s; }
+        .ds-card:hover .ds-remove { opacity:1; }
+
+        /* Monitor */
+        .threshold-control { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
+        .slider-group { flex: 1; min-width: 200px; }
+        .slider-group input[type=range] { width: 100%; accent-color: var(--accent-blue); }
+        .slider-val { font-size: 1.2rem; font-weight: 700; color: var(--accent-blue); }
+
+        /* Dallanmalı Mimari Diyagramı */
+        .arch-diagram { display:flex; flex-direction:column; align-items:center; gap:0; padding:16px 0; }
+        .arch-row { display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; }
+        .arch-node { padding:10px 14px; border-radius:10px; border:2px solid var(--border); background:var(--bg-secondary); text-align:center; font-size:0.78rem; font-weight:700; font-family:'Fira Code',monospace; min-width:80px; transition:all 0.3s; }
+        .arch-node:hover { transform:translateY(-2px); }
+        .arch-node small { font-weight:400; color:var(--text-secondary); font-size:0.68rem; }
+        .arch-node.purple { border-color:var(--accent-purple); color:var(--accent-purple); }
+        .arch-node.yellow { border-color:var(--accent-yellow); color:var(--accent-yellow); }
+        .arch-node.cyan { border-color:var(--accent-cyan); color:var(--accent-cyan); }
+        .arch-node.green { border-color:var(--accent-green); color:var(--accent-green); }
+        .fork-node { position:relative; box-shadow:0 0 16px rgba(251,191,36,0.2); }
+        .arch-arrow { color:var(--text-secondary); font-size:0.85rem; opacity:0.5; }
+        .arch-arrow-down { color:var(--text-secondary); font-size:1rem; text-align:center; padding:4px 0; opacity:0.5; }
+        .arch-fork { display:flex; gap:32px; margin-top:16px; justify-content:center; width:100%; flex-wrap:wrap; }
+        .arch-branch { flex:1; min-width:200px; max-width:400px; display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px; border-radius:14px; }
+        .fast-branch { border:1px dashed rgba(34,197,94,0.3); background:rgba(34,197,94,0.03); }
+        .deep-branch { border:1px dashed rgba(56,189,248,0.3); background:rgba(56,189,248,0.03); }
+        .arch-branch-label { text-align:center; font-size:0.82rem; font-weight:600; line-height:1.5; }
+        .arch-branch-label small { font-weight:400; color:var(--text-secondary); font-size:0.72rem; }
+        .safe-label { color:var(--accent-green); }
+        .uncertain-label { color:var(--accent-yellow); }
+        .arch-badge { padding:4px 14px; border-radius:20px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; }
+        .fast-badge { background:rgba(34,197,94,0.15); color:var(--accent-green); border:1px solid rgba(34,197,94,0.3); }
+        .deep-badge { background:rgba(56,189,248,0.15); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.3); }
+        .arch-deep-row { display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; }
+        .arch-merge { display:flex; flex-direction:column; align-items:center; gap:4px; margin-top:16px; position:relative; }
+        .arch-merge-lines { display:flex; gap:60px; }
+        .merge-line { width:2px; height:20px; background:var(--border); border-radius:1px; }
+        .final-node { box-shadow:0 0 16px rgba(34,197,94,0.2); }
+        @media (max-width:600px) { .arch-fork { flex-direction:column; align-items:center; } .arch-branch { max-width:100%; } }
+
+        .explanation-box {
+            margin-top: 16px; padding: 16px;
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent-purple);
+            border-radius: 0 12px 12px 0;
+            font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;
+        }
+
+        /* Loading */
+        .loading { text-align: center; padding: 40px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+
+        /* ═══ Pipeline Animation ═══ */
+        .pipeline-anim-container {
+            display: flex; align-items: center; gap: 6px;
+            overflow-x: auto; padding: 20px 8px; flex-wrap: wrap; justify-content: center;
+        }
+        .pipe-node {
+            position: relative; padding: 12px 16px; border-radius: 12px;
+            background: var(--bg-secondary); border: 2px solid var(--border);
+            text-align: center; min-width: 80px; transition: all 0.4s;
+        }
+        .pipe-node .pipe-icon { font-size: 1.4rem; margin-bottom: 4px; }
+        .pipe-node .pipe-name { font-size: 0.72rem; font-weight: 600; }
+        .pipe-node .pipe-sub { font-size: 0.62rem; color: var(--text-secondary); }
+        .pipe-node .pipe-pulse { position: absolute; inset: -4px; border-radius: 14px; border: 2px solid transparent; }
+        .pipe-node.active { border-color: var(--accent-blue); background: rgba(59,130,246,0.1); transform: scale(1.08); }
+        .pipe-node.active .pipe-pulse { border-color: var(--accent-blue); animation: pipePulse 0.6s ease-out; }
+        .pipe-node.done { border-color: var(--accent-green); background: rgba(16,185,129,0.08); }
+        .pipe-node.done .pipe-icon::after { content: '✓'; font-size: 0.6rem; position: absolute; top: 6px; right: 6px; color: var(--accent-green); }
+        .pipe-node.skipped { opacity: 0.25; border-style: dashed; }
+        .pipe-arrow { color: var(--accent-blue); font-size: 1rem; opacity: 0.4; }
+        @keyframes pipePulse { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.3);opacity:0} }
+
+        /* ═══ SHAP Chart ═══ */
+        .shap-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; color: var(--accent-purple); }
+        .shap-bars { display: flex; flex-direction: column; gap: 10px; }
+        .shap-row { display: flex; align-items: center; gap: 12px; }
+        .shap-label { width: 140px; font-size: 0.75rem; color: var(--text-secondary); text-align: right; flex-shrink: 0; }
+        .shap-bar-bg { flex: 1; height: 24px; background: var(--bg-primary); border-radius: 6px; overflow: hidden; }
+        .shap-bar-fill { height: 100%; background: var(--gradient-1); border-radius: 6px; transition: width 1s ease; min-width: 4px; }
+        .shap-val { width: 56px; font-size: 0.75rem; font-weight: 600; color: var(--accent-blue); text-align: left; }
+
+        /* ═══ Radar Chart ═══ */
+        .radar-container { display: flex; justify-content: center; padding: 16px; }
+        .radar-container canvas { max-width: 100%; }
+        .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 800px) { .charts-row { grid-template-columns: 1fr; } }
+
+        /* ═══ HOW IT WORKS PAGE ═══ */
+        .hiw-highlight-row { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+        .hiw-highlight { flex:1; min-width:120px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
+        .hiw-highlight-icon { font-size:1.8rem; font-weight:800; font-family:'Fira Code',monospace; }
+        .hiw-highlight-label { font-size:0.72rem; color:var(--text-secondary); margin-top:4px; text-transform:uppercase; letter-spacing:0.5px; }
+        .hiw-pipeline { display:flex; flex-direction:column; gap:0; }
+        .hiw-agent { display:flex; align-items:flex-start; gap:16px; padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--bg-secondary); transition:all 0.3s; }
+        .hiw-agent:hover { border-color:var(--accent-blue); transform:translateX(4px); }
+        .hiw-agent.decision { border-color:var(--accent-yellow); background:rgba(251,191,36,0.05); }
+        .hiw-agent.deep { border-left:3px solid var(--accent-cyan); }
+        .hiw-agent-num { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.9rem; color:#fff; flex-shrink:0; font-family:'Fira Code',monospace; }
+        .hiw-agent-body { flex:1; }
+        .hiw-agent-icon { font-size:1.2rem; float:right; }
+        .hiw-agent-name { font-weight:700; font-size:0.95rem; margin-bottom:4px; }
+        .hiw-agent-desc { font-size:0.82rem; color:var(--text-secondary); }
+        .hiw-agent-badge { display:inline-block; font-size:0.65rem; padding:2px 8px; border-radius:6px; margin-top:6px; font-weight:600; }
+        .hiw-agent-badge.decision { background:rgba(251,191,36,0.15); color:var(--accent-yellow); }
+        .hiw-agent-badge.deep { background:rgba(6,182,212,0.15); color:var(--accent-cyan); }
+        .hiw-agent-arrow { text-align:center; color:var(--text-secondary); font-size:0.9rem; padding:4px 0; opacity:0.4; }
+        .hiw-steps { display:flex; flex-direction:column; gap:12px; }
+        .hiw-step { display:flex; gap:14px; padding:14px; border-radius:12px; background:var(--bg-secondary); border:1px solid var(--border); transition:all 0.3s; }
+        .hiw-step:hover { border-color:var(--accent-cyan); }
+        .hiw-step-num { width:32px; height:32px; border-radius:50%; background:var(--accent-cyan); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0; font-family:'Fira Code',monospace; }
+        .hiw-step-content { flex:1; }
+        .hiw-step-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+        .hiw-step-icon { font-size:1rem; }
+        .hiw-step-name { font-weight:700; font-size:0.9rem; }
+        .hiw-step-status { margin-left:auto; }
+        .hiw-step-desc { font-size:0.8rem; color:var(--text-secondary); margin-bottom:8px; }
+        .hiw-step-example { background:var(--bg-primary); border-radius:8px; padding:10px 12px; }
+        .hiw-step-io { font-size:0.78rem; color:var(--text-secondary); margin:2px 0; }
+        .hiw-io-label { font-weight:600; color:var(--accent-cyan); width:40px; display:inline-block; }
+        .hiw-step-io code { font-family:'Fira Code',monospace; color:var(--text-primary); font-size:0.75rem; background:rgba(56,189,248,0.1); padding:2px 6px; border-radius:4px; }
+        .hiw-feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+        .hiw-feature-item { background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:14px; }
+        .hiw-feature-group { font-weight:700; font-size:0.85rem; color:var(--accent-yellow); margin-bottom:6px; }
+        .hiw-feature-names { margin-bottom:6px; }
+        .hiw-feature-names code { font-family:'Fira Code',monospace; font-size:0.72rem; background:rgba(167,139,250,0.1); padding:2px 6px; border-radius:4px; color:var(--accent-purple); margin-right:4px; }
+        .hiw-feature-desc { font-size:0.78rem; color:var(--text-secondary); }
+        .hiw-threshold { margin-top:12px; }
+        .hiw-threshold-bar { display:flex; border-radius:12px; overflow:hidden; margin-bottom:16px; }
+        .hiw-zone { flex:1; padding:16px 12px; text-align:center; font-size:0.82rem; font-weight:700; }
+        .hiw-zone.safe { background:rgba(34,197,94,0.15); color:var(--accent-green); }
+        .hiw-zone.uncertain { background:rgba(251,191,36,0.15); color:var(--accent-yellow); }
+        .hiw-zone.phishing { background:rgba(239,68,68,0.15); color:var(--accent-red); }
+        .hiw-zone small { font-weight:400; font-size:0.72rem; opacity:0.8; }
+        .hiw-threshold-legend { display:flex; flex-direction:column; gap:8px; font-size:0.82rem; color:var(--text-secondary); }
+        .hiw-arch { display:flex; flex-direction:column; align-items:center; gap:12px; padding:16px 0; }
+        .hiw-arch-box { background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:12px 20px; text-align:center; font-size:0.82rem; font-weight:600; min-width:200px; }
+        .hiw-arch-box.input { border-color:var(--accent-blue); color:var(--accent-blue); }
+        .hiw-arch-box.fusion { border-color:var(--accent-purple); color:var(--accent-purple); }
+        .hiw-arch-box.output { border-color:var(--accent-green); color:var(--accent-green); }
+        .hiw-arch-box small { font-weight:400; font-size:0.72rem; color:var(--text-secondary); }
+        .hiw-arch-split { display:flex; gap:24px; width:100%; justify-content:center; flex-wrap:wrap; }
+        .hiw-arch-branch { display:flex; flex-direction:column; gap:8px; align-items:center; padding:16px; border:1px dashed var(--border); border-radius:12px; flex:1; min-width:200px; }
+        .hiw-arch-branch.glove { border-color:rgba(34,197,94,0.3); }
+        .hiw-arch-branch.bilstm { border-color:rgba(56,189,248,0.3); }
+        .hiw-stacking { margin-top:12px; }
+        .hiw-stack-row { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+        .hiw-stack-item { flex:1; min-width:180px; padding:16px; border-radius:12px; border:2px solid var(--border); text-align:center; font-size:0.85rem; font-weight:600; background:var(--bg-secondary); }
+        .hiw-stack-meta { background:var(--gradient-1); color:#fff; padding:16px; border-radius:12px; text-align:center; font-weight:700; font-size:0.9rem; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>PhishGuard AI v3.0</h1>
+        <nav class="nav">
+            <button class="nav-btn active" id="nav-predict" onclick="showPage('predict', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Analiz
+            </button>
+            <button class="nav-btn" id="nav-evaluate" onclick="showPage('evaluate', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                Değerlendirme
+            </button>
+            <button class="nav-btn" id="nav-monitor" onclick="showPage('monitor', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+                Monitor
+            </button>
+            <button class="nav-btn" id="nav-howitworks" onclick="showPage('howitworks', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                Nasıl Çalışır
+            </button>
+        </nav>
+        <div class="status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText" style="font-size:0.8rem;color:var(--text-secondary)">Bağlanıyor...</span>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- ═══════ PREDICT PAGE ═══════ -->
+        <div id="page-predict" class="page active">
+            <div class="card">
+                <div class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    E-Posta Phishing Analizi
+                </div>
+                <div class="form-group">
+                    <label>Gönderen (opsiyonel)</label>
+                    <input type="text" id="sender" placeholder="security@example.com">
+                </div>
+                <div class="form-group">
+                    <label>E-Posta Konusu *</label>
+                    <input type="text" id="subject" placeholder="URGENT: Verify your account" required>
+                </div>
+                <div class="form-group">
+                    <label>E-Posta İçeriği *</label>
+                    <textarea id="body" placeholder="Dear Customer, Your account will be suspended..."></textarea>
+                </div>
+                <button class="btn-primary" id="analyzeBtn" onclick="analyzeEmail()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    Analiz Et
+                </button>
+            </div>
+
+            <div id="resultPanel" class="result-panel" style="display:none">
+                <div id="verdictBanner" class="verdict-banner">
+                    <div class="verdict-icon" id="verdictIcon"></div>
+                    <div class="verdict-text" id="verdictText"></div>
+                    <div class="verdict-sub" id="verdictSub"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📊 Skor Detayları</div>
+                    <div class="metrics-grid" id="scoreMetrics"></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔗 Canlı Pipeline Akışı</div>
+                    <div id="pipelineAnim"></div>
+                </div>
+                <div class="charts-row">
+                    <div class="card">
+                        <div class="card-title">🔍 Feature Importance (SHAP)</div>
+                        <div id="shapChart"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">📊 Stilometrik Radar Profili</div>
+                        <div class="radar-container">
+                            <canvas id="radarCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="explanation-box" id="explanationBox"></div>
+            </div>
+        </div>
+
+        <!-- ═══════ EVALUATE PAGE ═══════ -->
+        <div id="page-evaluate" class="page">
+            <div class="card">
+                <div class="card-title">📊 Model Performans Değerlendirmesi</div>
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()" style="cursor:pointer">
+                    <input type="file" id="csvFile" accept=".csv" onchange="evaluateCSV(this)">
+                    <div style="margin-bottom:12px">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" width="48" height="48"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" x2="12" y1="18" y2="12"/><line x1="9" x2="15" y1="15" y2="15"/></svg>
+                    </div>
+                    <div style="font-weight:600" id="uploadLabel">CSV Dosyası Yükle</div>
+                    <div style="color:var(--text-secondary);font-size:0.82rem;margin-top:8px">
+                        Sütunlar: <code>subject, body, label</code> (label: 0=safe, 1=phishing)
+                    </div>
+                </div>
+                <div id="evalLoading" class="loading" style="display:none">
+                    <div class="spinner"></div>
+                    <div>Değerlendiriliyor...</div>
+                </div>
+            </div>
+
+            <!-- Metrik kartları her zaman görünür -->
+            <div class="eval-metrics" id="evalResults">
+                <div class="eval-card" style="border-top-color:#3b82f6">
+                    <div class="val" id="m-accuracy" style="color:#3b82f6">—</div>
+                    <div class="lbl">Accuracy</div>
+                    <div class="eval-desc">Genel doğruluk oranı</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#10b981">
+                    <div class="val" id="m-f1" style="color:#10b981">—</div>
+                    <div class="lbl">F1-Score</div>
+                    <div class="eval-desc">Precision + Recall dengesi</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#8b5cf6">
+                    <div class="val" id="m-auc" style="color:#8b5cf6">—</div>
+                    <div class="lbl">ROC-AUC</div>
+                    <div class="eval-desc">Sınıflandırma kalitesi</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#f59e0b">
+                    <div class="val" id="m-prauc" style="color:#f59e0b">—</div>
+                    <div class="lbl">PR-AUC</div>
+                    <div class="eval-desc">Precision-Recall eğrisi altı alan</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#06b6d4">
+                    <div class="val" id="m-precision" style="color:#06b6d4">—</div>
+                    <div class="lbl">Precision</div>
+                    <div class="eval-desc">Phishing hassasiyeti</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#ec4899">
+                    <div class="val" id="m-recall" style="color:#ec4899">—</div>
+                    <div class="lbl">Recall</div>
+                    <div class="eval-desc">Phishing yakalama oranı</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#14b8a6">
+                    <div class="val" id="m-mcc" style="color:#14b8a6">—</div>
+                    <div class="lbl">MCC</div>
+                    <div class="eval-desc">Matthews korelasyon katsayısı</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#ef4444">
+                    <div class="val" id="m-fnr" style="color:#ef4444">—</div>
+                    <div class="lbl">FNR</div>
+                    <div class="eval-desc">Kaçan phishing oranı</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#a855f7">
+                    <div class="val" id="m-latency" style="color:#a855f7">—</div>
+                    <div class="lbl">Avg Latency</div>
+                    <div class="eval-desc">Ortalama işlem süresi</div>
+                </div>
+                <div class="eval-card" style="border-top-color:#f97316">
+                    <div class="val" id="m-throughput" style="color:#f97316">—</div>
+                    <div class="lbl">Throughput</div>
+                    <div class="eval-desc">Saniyedeki istek sayısı</div>
+                </div>
+            </div>
+
+            <!-- ─── Veri Seti Analiz Havuzu ─── -->
+            <div class="card">
+                <div class="ds-pool-header">
+                    <div class="ds-pool-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" width="18" height="18"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                        Veri Seti Analiz Havuzu
+                        <span class="ds-pool-badge" id="dsPoolCount">6 veri seti</span>
+                    </div>
+                    <label class="ds-add-btn" for="dsNewFile">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14m-7-7h14"/></svg>
+                        Yeni Veri Seti Ekle
+                        <input type="file" id="dsNewFile" accept=".csv" style="display:none" onchange="addDatasetToPool(this)">
+                    </label>
+                </div>
+                <div class="ds-grid" id="dsGrid"></div>
+            </div>
+        </div>
+
+        <!-- ═══════ MONITOR PAGE ═══════ -->
+        <div id="page-monitor" class="page">
+            <div class="card">
+                <div class="card-title">⚙️ Adaptif Eşik Kontrolü</div>
+                <div class="threshold-control">
+                    <div class="slider-group">
+                        <label style="font-size:0.82rem;color:var(--text-secondary)">T_low (Safe Sınırı)</label>
+                        <div class="slider-val" id="tlowVal">0.35</div>
+                        <input type="range" id="tlowSlider" min="0.1" max="0.5" step="0.01" value="0.35" oninput="updateSlider()">
+                    </div>
+                    <div class="slider-group">
+                        <label style="font-size:0.82rem;color:var(--text-secondary)">T_high (Phishing Sınırı)</label>
+                        <div class="slider-val" id="thighVal">0.65</div>
+                        <input type="range" id="thighSlider" min="0.5" max="0.9" step="0.01" value="0.65" oninput="updateSlider()">
+                    </div>
+                    <button class="btn-primary" style="width:auto;padding:14px 28px" onclick="saveThresholds()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">🏗️ Sistem Mimarisi</div>
+                <!-- Dallanmalı Mimari Diyagramı -->
+                <div class="arch-diagram">
+                    <!-- Üst sıra: Adım 1–5 (her zaman çalışır) -->
+                    <div class="arch-row main-row">
+                        <div class="arch-node purple">Adım 1<br><small>Ingestion</small></div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node purple">Adım 2<br><small>Paralel Pre</small></div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node purple">Adım 3<br><small>Stylometric</small></div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node purple">Adım 4<br><small>XGBoost</small></div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node yellow fork-node" id="forkNode">Adım 5<br><small>Threshold</small></div>
+                    </div>
+
+                    <!-- Çatallanma -->
+                    <div class="arch-fork">
+                        <!-- Sol dal: Hızlı yol (kesin kararlar) -->
+                        <div class="arch-branch fast-branch">
+                            <div class="arch-branch-label safe-label">✅ SAFE veya PHISHING<br><small>P ≤ 0.35 veya P ≥ 0.65</small></div>
+                            <div class="arch-arrow-down">↓</div>
+                            <div class="arch-badge fast-badge">HIZLI YOL</div>
+                        </div>
+                        <!-- Sağ dal: Derin yol (belirsiz) -->
+                        <div class="arch-branch deep-branch">
+                            <div class="arch-branch-label uncertain-label">⚠️ UNCERTAIN<br><small>0.35 &lt; P &lt; 0.65</small></div>
+                            <div class="arch-arrow-down">↓</div>
+                            <div class="arch-deep-row">
+                                <div class="arch-node cyan">Adım 6<br><small>NLP</small></div>
+                                <div class="arch-arrow">→</div>
+                                <div class="arch-node cyan">Adım 7<br><small>BiLSTM+GloVe</small></div>
+                                <div class="arch-arrow">→</div>
+                                <div class="arch-node cyan">Adım 8<br><small>Meta-Clf</small></div>
+                            </div>
+                            <div class="arch-badge deep-badge">DERİN ANALİZ</div>
+                        </div>
+                    </div>
+
+                    <!-- Birleşme: Adım 9 -->
+                    <div class="arch-merge">
+                        <div class="arch-merge-lines">
+                            <div class="merge-line left"></div>
+                            <div class="merge-line right"></div>
+                        </div>
+                        <div class="arch-arrow-down">↓</div>
+                        <div class="arch-node green final-node">Adım 9<br><small>Sonuç</small></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" id="healthCard">
+                <div class="card-title">❤️ Sistem Sağlığı</div>
+                <div id="healthInfo" style="color:var(--text-secondary);font-size:0.88rem">Yükleniyor...</div>
+            </div>
+        </div>
+
+        <!-- ═══════ HOW IT WORKS PAGE ═══════ -->
+        <div id="page-howitworks" class="page"></div>
+    </main>
+
+<script>
+const API = 'http://localhost:8000/api/v1';
+
+function showPage(name, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (name === 'monitor') loadHealth();
+}
+
+async function analyzeEmail() {
+    const subject = document.getElementById('subject').value.trim();
+    const body = document.getElementById('body').value.trim();
+    const sender = document.getElementById('sender').value.trim();
+    if (!subject || !body) return alert('Konu ve içerik gerekli!');
+
+    const btn = document.getElementById('analyzeBtn');
+    btn.disabled = true; btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Analiz Ediliyor...';
+
+    // Pipeline animasyonunu başlat
+    document.getElementById('resultPanel').style.display = 'block';
+    renderPipelineAnimation('pipelineAnim');
+
+    try {
+        // Animasyonu hemen başlat (tahmin gelene kadar)
+        const animPromise = animatePipeline(true);
+
+        const res = await fetch(API + '/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subject, body, sender: sender || null })
+        });
+        const data = await res.json();
+
+        // Doğru path ile tekrar animasyon
+        renderPipelineAnimation('pipelineAnim');
+        await animatePipeline(data.detection_path === 'FULL_PIPELINE');
+
+        showResult(data);
+    } catch (e) {
+        alert('API bağlantı hatası: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Analiz Et';
+    }
+}
+
+function showResult(d) {
+    document.getElementById('resultPanel').style.display = 'block';
+    const banner = document.getElementById('verdictBanner');
+    const icons = { PHISHING: '🚨', SAFE: '✅', UNCERTAIN: '⚠️' };
+    const classes = { PHISHING: 'phishing', SAFE: 'safe', UNCERTAIN: 'uncertain' };
+    banner.className = 'verdict-banner ' + (classes[d.verdict] || 'uncertain');
+    document.getElementById('verdictIcon').textContent = icons[d.verdict] || '❓';
+    document.getElementById('verdictText').textContent = d.verdict;
+    document.getElementById('verdictSub').textContent = `Güven: ${(d.final_probability * 100).toFixed(1)}% | ${d.detection_path} | ${d.processing_time_ms}ms`;
+
+    const colors = {
+        'Güven Skoru': '#3b82f6', 'XGBoost': '#8b5cf6', 'BiLSTM': '#06b6d4',
+        'Süre': '#f59e0b', 'Path': '#10b981', 'Eylem': '#ef4444'
+    };
+    const metrics = [
+        ['Güven Skoru', (d.final_probability * 100).toFixed(1) + '%'],
+        ['XGBoost', (d.xgboost_score * 100).toFixed(1) + '%'],
+        ['BiLSTM', d.lstm_score ? (d.lstm_score * 100).toFixed(1) + '%' : '—'],
+        ['Süre', d.processing_time_ms + 'ms'],
+        ['Path', d.detection_path],
+        ['Eylem', d.action],
+    ];
+    document.getElementById('scoreMetrics').innerHTML = metrics.map(([l, v]) =>
+        `<div class="metric-card"><div class="metric-value" style="color:${colors[l]}">${v}</div><div class="metric-label">${l}</div></div>`
+    ).join('');
+
+    // Pipeline visualization — pipelineAnim ID kullan (pipelineFlow değil!)
+    const isFull = d.detection_path === 'FULL_PIPELINE';
+    renderPipelineAnimation('pipelineAnim');
+    animatePipeline(isFull);
+
+    document.getElementById('explanationBox').textContent = d.explanation;
+
+    // SHAP Feature Importance Chart
+    if (d.stylometric_features) {
+        renderSHAPChart('shapChart', d.stylometric_features);
+        renderRadarChart('radarCanvas', d.stylometric_features);
+    }
+
+    document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function evaluateCSV(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    document.getElementById('evalLoading').style.display = 'block';
+    document.getElementById('uploadLabel').textContent = file.name + ' yükleniyor...';
+
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+        const res = await fetch(API + '/evaluate', { method: 'POST', body: formData });
+        const m = await res.json();
+
+        const fill = (id, val, isNum) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = isNum ? parseFloat(val).toFixed(4) : val;
+            el.closest('.eval-card').classList.add('loaded');
+        };
+
+        fill('m-accuracy',   m.accuracy,             true);
+        fill('m-f1',         m.f1_score,             true);
+        fill('m-auc',        m.roc_auc,              true);
+        fill('m-prauc',      m.pr_auc,               true);
+        fill('m-precision',  m.precision,            true);
+        fill('m-recall',     m.recall,               true);
+        fill('m-mcc',        m.mcc,                  true);
+        fill('m-fnr',        m.false_negative_rate,  true);
+        fill('m-latency',    m.avg_latency_ms + ' ms', false);
+        fill('m-throughput', m.throughput_rps + ' req/s', false);
+
+        document.getElementById('uploadLabel').textContent = '✅ ' + file.name + ' — Değlendirme tamamlandı';
+        document.getElementById('uploadZone').style.borderColor = 'var(--accent-green)';
+    } catch (e) {
+        document.getElementById('uploadLabel').textContent = '❌ Hata: ' + e.message;
+        document.getElementById('uploadZone').style.borderColor = 'var(--accent-red)';
+    }
+    document.getElementById('evalLoading').style.display = 'none';
+}
+
+function updateSlider() {
+    document.getElementById('tlowVal').textContent = document.getElementById('tlowSlider').value;
+    document.getElementById('thighVal').textContent = document.getElementById('thighSlider').value;
+}
+
+async function saveThresholds() {
+    try {
+        await fetch(API + '/threshold', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                t_low: parseFloat(document.getElementById('tlowSlider').value),
+                t_high: parseFloat(document.getElementById('thighSlider').value)
+            })
+        });
+        alert('✅ Eşikler güncellendi!');
+    } catch (e) { alert('Hata: ' + e.message); }
+}
+
+async function loadHealth() {
+    try {
+        const res = await fetch(API + '/health');
+        const h = await res.json();
+        document.getElementById('healthInfo').innerHTML = `
+            <div class="metrics-grid">
+                <div class="metric-card"><div class="metric-value" style="color:var(--accent-green)">${h.status}</div><div class="metric-label">Durum</div></div>
+                <div class="metric-card"><div class="metric-value">${h.version}</div><div class="metric-label">Versiyon</div></div>
+                <div class="metric-card"><div class="metric-value">${h.xgboost_loaded?'✅':'❌'}</div><div class="metric-label">XGBoost</div></div>
+                <div class="metric-card"><div class="metric-value">${h.lstm_loaded?'✅':'❌'}</div><div class="metric-label">BiLSTM</div></div>
+                <div class="metric-card"><div class="metric-value">${h.tokenizer_loaded?'✅':'❌'}</div><div class="metric-label">Tokenizer</div></div>
+                <div class="metric-card"><div class="metric-value">${h.threshold_low} / ${h.threshold_high}</div><div class="metric-label">Eşikler</div></div>
+            </div>`;
+        document.getElementById('statusDot').style.background = 'var(--accent-green)';
+        document.getElementById('statusText').textContent = 'Bağlı';
+    } catch {
+        document.getElementById('healthInfo').textContent = '❌ Backend bağlantısı yok.';
+        document.getElementById('statusDot').style.background = 'var(--accent-red)';
+        document.getElementById('statusText').textContent = 'Bağlantı yok';
+    }
+}
+
+// Başlangıç health check
+loadHealth();
+// Pipeline animasyonunu hazırla
+renderPipelineAnimation('pipelineAnim');
+</script>
+<script src="charts.js"></script>
+<script src="howitworks.js"></script>
+<script>renderHowItWorks();</script>
+<script>
+// ═══════════════════════════════════════
+// VERİ SETİ ANALİZ HAVUZU
+// ═══════════════════════════════════════
+
+const KNOWN_DATASETS = [
+    {
+        name: 'CEAS_08',
+        total: 37000, phishing: 18000, safe: 19000,
+        color: '#ef4444',
+        badge: 'trained',
+        source: 'SpamAssassin Challenge 2008 — Spam yarışma veri seti',
+        year: '2008'
+    },
+    {
+        name: 'Enron',
+        total: 33702, phishing: 6552, safe: 27150,
+        color: '#f97316',
+        badge: 'trained',
+        source: 'Enron Email Dataset — Gerçek kurumsal e-postalar',
+        year: '2004'
+    },
+    {
+        name: 'SpamAssassin',
+        total: 6047, phishing: 2399, safe: 3648,
+        color: '#fbbf24',
+        badge: 'trained',
+        source: 'Apache SpamAssassin — Açık kaynak spam koleksiyonu',
+        year: '2006'
+    },
+    {
+        name: 'Ling',
+        total: 2893, phishing: 481, safe: 2412,
+        color: '#22c55e',
+        badge: 'trained',
+        source: 'Ling-Spam Dataset — Dilbilim listesi e-postaları',
+        year: '2000'
+    },
+    {
+        name: 'Nazario',
+        total: 1565, phishing: 1565, safe: 0,
+        color: '#a855f7',
+        badge: 'trained',
+        source: 'Nazario Phishing Corpus — Saf phishing örnekleri',
+        year: '2007'
+    },
+    {
+        name: 'Nigerian Fraud',
+        total: 2000, phishing: 2000, safe: 0,
+        color: '#06b6d4',
+        badge: 'trained',
+        source: 'Nigerian Fraud (419) E-posta Koleksiyonu',
+        year: '2005'
+    }
+];
+
+let customDatasets = [];
+
+function renderDsCard(ds, removable) {
+    const phishPct = ds.total > 0 ? (ds.phishing / ds.total * 100).toFixed(1) : '0.0';
+    const safePct  = ds.total > 0 ? (ds.safe / ds.total * 100).toFixed(1) : '0.0';
+    const removeBtn = removable
+        ? `<button class="ds-remove" onclick="removeDsFromPool('${ds.name}')">✕ Kaldır</button>`
+        : '';
+    return `
+    <div class="ds-card" style="--ds-color:${ds.color}" id="dscard-${ds.name.replace(/\s/g,'_')}">
+        ${removeBtn}
+        <div class="ds-card-top">
+            <div class="ds-name">${ds.name}</div>
+            <span class="ds-badge ${ds.badge}">${ds.badge === 'trained' ? 'Eğitimde Kullanıldı' : 'Özel'}</span>
+        </div>
+        <div class="ds-stats">
+            <div class="ds-stat">
+                <div class="ds-stat-val" style="color:${ds.color}">${ds.total.toLocaleString('tr-TR')}</div>
+                <div class="ds-stat-lbl">Toplam E-posta</div>
+            </div>
+            <div class="ds-stat">
+                <div class="ds-stat-val" style="color:var(--accent-red)">${ds.phishing.toLocaleString('tr-TR')}</div>
+                <div class="ds-stat-lbl">Phishing</div>
+            </div>
+            <div class="ds-stat">
+                <div class="ds-stat-val" style="color:var(--accent-green)">${ds.safe.toLocaleString('tr-TR')}</div>
+                <div class="ds-stat-lbl">Safe</div>
+            </div>
+            <div class="ds-stat">
+                <div class="ds-stat-val" style="color:var(--accent-yellow)">${phishPct}%</div>
+                <div class="ds-stat-lbl">Phishing Oranı</div>
+            </div>
+        </div>
+        <div class="ds-bar">
+            <div class="ds-bar-fill" style="width:${phishPct}%"></div>
+        </div>
+        <div class="ds-source">${ds.year ? `[${ds.year}] ` : ''}${ds.source}</div>
+    </div>`;
+}
+
+function initDsPool() {
+    const grid = document.getElementById('dsGrid');
+    if (!grid) return;
+    grid.innerHTML = KNOWN_DATASETS.map(ds => renderDsCard(ds, false)).join('');
+    updateDsBadge();
+    // Animate bars
+    setTimeout(() => {
+        document.querySelectorAll('.ds-bar-fill').forEach(el => {
+            el.style.width = el.style.width; // trigger repaint
+        });
+    }, 100);
+}
+
+function updateDsBadge() {
+    const total = KNOWN_DATASETS.length + customDatasets.length;
+    const badge = document.getElementById('dsPoolCount');
+    if (badge) badge.textContent = total + ' veri seti';
+}
+
+function removeDsFromPool(name) {
+    const key = name.replace(/\s/g,'_');
+    const card = document.getElementById('dscard-' + key);
+    if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+        card.style.transition = 'all 0.3s';
+        setTimeout(() => card.remove(), 300);
+    }
+    customDatasets = customDatasets.filter(d => d.name !== name);
+    updateDsBadge();
+}
+
+async function addDatasetToPool(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const name = file.name.replace('.csv','');
+
+    // CSV'yi okuyup label sütununu say
+    const text = await file.text();
+    const lines = text.trim().split('\n');
+    const header = lines[0].toLowerCase().split(',').map(h => h.trim().replace(/"/g,''));
+    const labelIdx = header.indexOf('label');
+
+    let phishing = 0, safe = 0, unknown = 0;
+    if (labelIdx >= 0) {
+        lines.slice(1).forEach(line => {
+            const cols = line.split(',');
+            const val = (cols[labelIdx] || '').trim().replace(/"/g,'');
+            if (val === '1' || val.toLowerCase() === 'phishing') phishing++;
+            else if (val === '0' || val.toLowerCase() === 'safe' || val.toLowerCase() === 'ham') safe++;
+            else unknown++;
+        });
+    } else {
+        unknown = lines.length - 1;
+    }
+
+    const total = phishing + safe + unknown;
+    const ds = {
+        name, total, phishing, safe,
+        color: '#a78bfa',
+        badge: 'custom',
+        source: `Yüklenen dosya: ${file.name} — ${total.toLocaleString('tr-TR')} satır`,
+        year: new Date().getFullYear().toString()
+    };
+    customDatasets.push(ds);
+
+    const grid = document.getElementById('dsGrid');
+    if (grid) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = renderDsCard(ds, true);
+        const card = tmp.firstElementChild;
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        grid.appendChild(card);
+        requestAnimationFrame(() => {
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        });
+    }
+    updateDsBadge();
+    input.value = ''; // reset so same file can be re-added
+}
+
+// Sayfa ilk açıldığında havuzu hazırla
+initDsPool();
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+venv_phish/
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+__MACOSX/
+
+# Large data files (download separately)
+phishing_project/data/glove.6B.100d.txt
+phishing_project/data/CEAS_08.csv
+phishing_project/data/Enron.csv
+phishing_project/data/SpamAssasin.csv
+phishing_project/data/Ling.csv
+phishing_project/data/Nazario.csv
+phishing_project/data/Nigerian_Fraud.csv
+phishing_project/data/final_dataset.csv
+phishing_project/data/featured_dataset.csv
+
+# Numpy intermediate files
+phishing_project/data/X_train.npy
+phishing_project/data/X_val.npy
+phishing_project/data/X_test.npy
+phishing_project/data/y_train.npy
+phishing_project/data/y_val.npy
+phishing_project/data/y_test.npy
+phishing_project/data/train_idx.npy
+phishing_project/data/val_idx.npy
+phishing_project/data/test_idx.npy
+phishing_project/data/xgb_test_proba.npy
+phishing_project/data/xgb_val_proba.npy
+phishing_project/data/bilstm_history.npy
+
+# Large model files (use Git LFS or download separately)
+LSTM/bilstm_model.keras
+LSTM/tokenizer.pkl
+LSTM/__MACOSX/
+LSTM/phishing_model.keras
+LSTM/README.txt
+
+# Gemini agent
+.agent/
+.gemini/
+
+# Misc
+*.png
+*.jpeg
+*.jpg
+"LSTM yerine BiLSTM ile oluşan performans artışı"
