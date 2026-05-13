@@ -91,10 +91,63 @@
         .nav-btn:hover:not(.active) { color: var(--text-primary); background: var(--bg-card); }
 
         /* Main */
-        .main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
-        .page { display: none; animation: fadeIn 0.4s; }
+        .main { max-width: 1440px; margin: 0 auto; padding: 12px 24px; }
+        .page { display: none; animation: fadeIn 0.3s; }
         .page.active { display: block; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ═══ Compact Predict Layout ═══ */
+        #page-predict { display: none; }
+        #page-predict.active { display: grid; grid-template-columns: 380px 1fr; gap: 16px; height: calc(100vh - 90px); overflow: hidden; }
+        #page-predict .card { padding: 16px; margin-bottom: 0; }
+        #page-predict .card-title { font-size: 0.92rem; margin-bottom: 12px; gap: 8px; }
+        #page-predict .card-title svg { width: 15px; height: 15px; }
+        #page-predict .form-group { margin-bottom: 8px; }
+        #page-predict .form-group label { font-size: 0.75rem; margin-bottom: 3px; }
+        #page-predict input { padding: 8px 12px; font-size: 0.82rem; border-radius: 8px; }
+        #page-predict textarea { min-height: 80px; padding: 8px 12px; font-size: 0.82rem; border-radius: 8px; resize: none; }
+        #page-predict .btn-primary { padding: 10px; font-size: 0.85rem; border-radius: 10px; }
+        #page-predict .predict-form-col { display: flex; flex-direction: column; gap: 0; overflow: hidden; }
+        #page-predict .predict-result-col { overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+        #page-predict .predict-result-col::-webkit-scrollbar { width: 4px; }
+        #page-predict .predict-result-col::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        #page-predict .result-panel { margin-top: 0; }
+        #page-predict .verdict-banner { padding: 12px; margin-bottom: 0; }
+        #page-predict .verdict-icon { font-size: 1.8rem; margin-bottom: 2px; }
+        #page-predict .verdict-text { font-size: 1.1rem; }
+        #page-predict .verdict-sub { font-size: 0.72rem; }
+        #page-predict .metrics-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        #page-predict .metric-card { padding: 8px 6px; border-radius: 8px; }
+        #page-predict .metric-value { font-size: 1rem; margin-bottom: 2px; }
+        #page-predict .metric-label { font-size: 0.62rem; }
+        #page-predict .charts-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+        #page-predict .explanation-box { padding: 10px; font-size: 0.78rem; margin-top: 0; }
+        #page-predict .pipe-node { padding: 6px 8px; min-width: 56px; border-width: 1.5px; border-radius: 8px; }
+        #page-predict .pipe-node .pipe-icon { font-size: 1rem; margin-bottom: 2px; }
+        #page-predict .pipe-node .pipe-name { font-size: 0.6rem; }
+        #page-predict .pipe-node .pipe-sub { font-size: 0.52rem; }
+        #page-predict .pipeline-anim-container { padding: 8px 4px; gap: 4px; }
+        #page-predict .pipe-arrow { font-size: 0.7rem; }
+        #page-predict .shap-row { gap: 6px; }
+        #page-predict .shap-label { width: 100px; font-size: 0.65rem; }
+        #page-predict .shap-bar-bg { height: 16px; }
+        #page-predict .shap-val { font-size: 0.65rem; width: 44px; }
+        #page-predict .shap-title { font-size: 0.78rem; margin-bottom: 8px; }
+        #page-predict .shap-bars { gap: 5px; }
+        #page-predict .radar-container { padding: 8px; }
+        #page-predict .radar-container canvas { max-height: 180px; }
+        /* Empty state for result column */
+        .predict-empty {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; color: var(--text-secondary); text-align: center; gap: 12px;
+            opacity: 0.5;
+        }
+        .predict-empty svg { opacity: 0.3; }
+        .predict-empty p { font-size: 0.82rem; }
+        @media (max-width: 900px) {
+            #page-predict.active { grid-template-columns: 1fr; height: auto; overflow: auto; }
+            #page-predict .predict-result-col { max-height: 60vh; }
+        }
 
         /* Cards */
         .card {
@@ -183,87 +236,120 @@
         .pipeline-step.skipped { opacity: 0.35; }
         .pipeline-arrow { color: var(--text-secondary); font-size: 0.8rem; }
 
-        /* Evaluate page */
+        /* ═══ Compact Evaluate Layout ═══ */
+        #page-evaluate { display:none; }
+        #page-evaluate.active { display:grid; grid-template-columns:1fr 1fr; gap:14px; height:calc(100vh - 90px); overflow:hidden; }
+        #page-evaluate .card { padding:12px; margin-bottom:0; }
+        #page-evaluate .card-title { font-size:0.85rem; margin-bottom:8px; }
+        .eval-left-col { display:flex; flex-direction:column; gap:10px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+        .eval-left-col::-webkit-scrollbar { width:4px; }
+        .eval-left-col::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+        .eval-right-col { overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+        .eval-right-col::-webkit-scrollbar { width:4px; }
+        .eval-right-col::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+        /* Compact upload zone */
         .upload-zone {
             border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            padding: 40px; text-align: center;
+            border-radius: 10px;
+            padding: 14px; text-align: center;
             cursor: pointer; transition: all 0.3s;
         }
         .upload-zone:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.05); }
         .upload-zone input { display: none; }
-        .eval-metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 24px; }
+
+        /* Compact eval metrics */
+        .eval-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 0; }
         .eval-card {
-            background: var(--bg-card); border-radius: 12px; padding: 20px;
-            border-top: 3px solid var(--accent-blue);
+            background: var(--bg-card); border-radius: 8px; padding: 8px 6px;
+            border-top: 2px solid var(--accent-blue); text-align:center;
         }
-        .eval-card .val { font-size: 1.8rem; font-weight: 800; }
-        .eval-card .lbl { font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px; font-weight: 600; }
-        .eval-desc { font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px; opacity: 0.7; border-top: 1px solid var(--border); padding-top: 6px; }
+        .eval-card .val { font-size: 1rem; font-weight: 800; }
+        .eval-card .lbl { font-size: 0.6rem; color: var(--text-secondary); margin-top: 2px; font-weight: 600; }
+        .eval-desc { font-size: 0.55rem; color: var(--text-secondary); margin-top: 3px; opacity: 0.7; border-top: 1px solid var(--border); padding-top: 3px; }
         .eval-card.loaded { animation: cardPop 0.4s ease; }
         @keyframes cardPop { 0%{transform:scale(0.95);opacity:0.5} 100%{transform:scale(1);opacity:1} }
 
-        /* Dataset Pool */
-        .ds-pool-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-        .ds-pool-title { font-size:1rem; font-weight:700; display:flex; align-items:center; gap:8px; }
-        .ds-pool-badge { font-size:0.7rem; background:rgba(56,189,248,0.15); color:var(--accent-blue); padding:3px 10px; border-radius:20px; border:1px solid rgba(56,189,248,0.3); font-family:'Fira Code',monospace; }
-        .ds-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-        .ds-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; padding:18px; transition:all 0.3s; position:relative; overflow:hidden; }
-        .ds-card:hover { border-color:var(--accent-blue); transform:translateY(-2px); box-shadow:var(--neon-blue); }
-        .ds-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--ds-color,var(--accent-blue)); }
-        .ds-card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
-        .ds-name { font-weight:700; font-size:0.95rem; font-family:'Fira Code',monospace; }
-        .ds-badge { font-size:0.65rem; padding:2px 8px; border-radius:6px; font-weight:600; }
+        /* Compact Dataset Pool */
+        .ds-pool-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
+        .ds-pool-title { font-size:0.85rem; font-weight:700; display:flex; align-items:center; gap:6px; }
+        .ds-pool-badge { font-size:0.6rem; background:rgba(56,189,248,0.15); color:var(--accent-blue); padding:2px 8px; border-radius:16px; border:1px solid rgba(56,189,248,0.3); font-family:'Fira Code',monospace; }
+        .ds-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+        .ds-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:10px; transition:all 0.2s; position:relative; overflow:hidden; }
+        .ds-card:hover { border-color:var(--accent-blue); }
+        .ds-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--ds-color,var(--accent-blue)); }
+        .ds-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+        .ds-name { font-weight:700; font-size:0.72rem; font-family:'Fira Code',monospace; }
+        .ds-badge { font-size:0.55rem; padding:1px 6px; border-radius:4px; font-weight:600; }
         .ds-badge.trained { background:rgba(34,197,94,0.15); color:var(--accent-green); }
         .ds-badge.custom { background:rgba(167,139,250,0.15); color:var(--accent-purple); }
-        .ds-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
-        .ds-stat { background:var(--bg-primary); border-radius:8px; padding:8px 10px; }
-        .ds-stat-val { font-size:1rem; font-weight:800; font-family:'Fira Code',monospace; }
-        .ds-stat-lbl { font-size:0.65rem; color:var(--text-secondary); margin-top:2px; }
-        .ds-bar { height:6px; border-radius:3px; background:var(--bg-primary); overflow:hidden; margin-bottom:8px; }
-        .ds-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent-red),var(--accent-yellow)); transition:width 1s ease; }
-        .ds-source { font-size:0.72rem; color:var(--text-secondary); }
-        .ds-add-btn { display:flex; align-items:center; gap:8px; padding:10px 18px; border:1px dashed var(--accent-purple); border-radius:10px; background:rgba(167,139,250,0.05); color:var(--accent-purple); cursor:pointer; font-size:0.85rem; font-weight:600; transition:all 0.2s; }
+        .ds-stats { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px; }
+        .ds-stat { background:var(--bg-primary); border-radius:6px; padding:4px 6px; }
+        .ds-stat-val { font-size:0.75rem; font-weight:800; font-family:'Fira Code',monospace; }
+        .ds-stat-lbl { font-size:0.55rem; color:var(--text-secondary); margin-top:1px; }
+        .ds-bar { height:4px; border-radius:2px; background:var(--bg-primary); overflow:hidden; margin-bottom:4px; }
+        .ds-bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--accent-red),var(--accent-yellow)); transition:width 1s ease; }
+        .ds-source { font-size:0.58rem; color:var(--text-secondary); }
+        .ds-add-btn { display:flex; align-items:center; gap:6px; padding:6px 12px; border:1px dashed var(--accent-purple); border-radius:8px; background:rgba(167,139,250,0.05); color:var(--accent-purple); cursor:pointer; font-size:0.72rem; font-weight:600; transition:all 0.2s; }
         .ds-add-btn:hover { background:rgba(167,139,250,0.12); border-style:solid; }
-        .ds-remove { position:absolute; top:10px; right:10px; background:rgba(239,68,68,0.15); border:none; border-radius:6px; color:var(--accent-red); cursor:pointer; font-size:0.7rem; padding:2px 6px; opacity:0; transition:opacity 0.2s; }
+        .ds-remove { position:absolute; top:6px; right:6px; background:rgba(239,68,68,0.15); border:none; border-radius:4px; color:var(--accent-red); cursor:pointer; font-size:0.6rem; padding:1px 4px; opacity:0; transition:opacity 0.2s; }
         .ds-card:hover .ds-remove { opacity:1; }
+        @media (max-width: 900px) {
+            #page-evaluate.active { grid-template-columns:1fr; height:auto; overflow:auto; }
+        }
 
-        /* Monitor */
-        .threshold-control { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
-        .slider-group { flex: 1; min-width: 200px; }
-        .slider-group input[type=range] { width: 100%; accent-color: var(--accent-blue); }
-        .slider-val { font-size: 1.2rem; font-weight: 700; color: var(--accent-blue); }
+        /* ═══ Compact Monitor Layout ═══ */
+        #page-monitor { display:none; }
+        #page-monitor.active { display:grid; grid-template-columns:340px 1fr; gap:14px; height:calc(100vh - 90px); overflow:hidden; }
+        #page-monitor .card { padding:14px; margin-bottom:0; }
+        #page-monitor .card-title { font-size:0.85rem; margin-bottom:10px; }
+        .monitor-left { display:flex; flex-direction:column; gap:12px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+        .monitor-left::-webkit-scrollbar { width:4px; }
+        .monitor-left::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+        #page-monitor .metrics-grid { grid-template-columns:repeat(3,1fr); gap:6px; }
+        #page-monitor .metric-card { padding:8px 6px; border-radius:8px; }
+        #page-monitor .metric-value { font-size:0.85rem; margin-bottom:1px; }
+        #page-monitor .metric-label { font-size:0.55rem; }
+        .monitor-right { overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+        .monitor-right::-webkit-scrollbar { width:4px; }
+        .monitor-right::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
 
-        /* Dallanmalı Mimari Diyagramı */
-        .arch-diagram { display:flex; flex-direction:column; align-items:center; gap:0; padding:16px 0; }
-        .arch-row { display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; }
-        .arch-node { padding:10px 14px; border-radius:10px; border:2px solid var(--border); background:var(--bg-secondary); text-align:center; font-size:0.78rem; font-weight:700; font-family:'Fira Code',monospace; min-width:80px; transition:all 0.3s; }
-        .arch-node:hover { transform:translateY(-2px); }
-        .arch-node small { font-weight:400; color:var(--text-secondary); font-size:0.68rem; }
+        .threshold-control { display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
+        .slider-group { flex:1; min-width:120px; }
+        .slider-group label { font-size:0.72rem !important; }
+        .slider-group input[type=range] { width:100%; accent-color:var(--accent-blue); }
+        .slider-val { font-size:0.95rem; font-weight:700; color:var(--accent-blue); }
+
+        /* Compact Arch Diagram */
+        .arch-diagram { display:flex; flex-direction:column; align-items:center; gap:0; padding:8px 0; }
+        .arch-row { display:flex; align-items:center; gap:5px; justify-content:center; flex-wrap:wrap; }
+        .arch-node { padding:6px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg-secondary); text-align:center; font-size:0.65rem; font-weight:700; font-family:'Fira Code',monospace; min-width:60px; transition:all 0.2s; }
+        .arch-node:hover { transform:translateY(-1px); }
+        .arch-node small { font-weight:400; color:var(--text-secondary); font-size:0.55rem; }
         .arch-node.purple { border-color:var(--accent-purple); color:var(--accent-purple); }
         .arch-node.yellow { border-color:var(--accent-yellow); color:var(--accent-yellow); }
         .arch-node.cyan { border-color:var(--accent-cyan); color:var(--accent-cyan); }
         .arch-node.green { border-color:var(--accent-green); color:var(--accent-green); }
-        .fork-node { position:relative; box-shadow:0 0 16px rgba(251,191,36,0.2); }
-        .arch-arrow { color:var(--text-secondary); font-size:0.85rem; opacity:0.5; }
-        .arch-arrow-down { color:var(--text-secondary); font-size:1rem; text-align:center; padding:4px 0; opacity:0.5; }
-        .arch-fork { display:flex; gap:32px; margin-top:16px; justify-content:center; width:100%; flex-wrap:wrap; }
-        .arch-branch { flex:1; min-width:200px; max-width:400px; display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px; border-radius:14px; }
+        .fork-node { position:relative; box-shadow:0 0 10px rgba(251,191,36,0.15); }
+        .arch-arrow { color:var(--text-secondary); font-size:0.7rem; opacity:0.4; }
+        .arch-arrow-down { color:var(--text-secondary); font-size:0.8rem; text-align:center; padding:2px 0; opacity:0.4; }
+        .arch-fork { display:flex; gap:16px; margin-top:8px; justify-content:center; width:100%; }
+        .arch-branch { flex:1; min-width:140px; max-width:300px; display:flex; flex-direction:column; align-items:center; gap:5px; padding:10px; border-radius:10px; }
         .fast-branch { border:1px dashed rgba(34,197,94,0.3); background:rgba(34,197,94,0.03); }
         .deep-branch { border:1px dashed rgba(56,189,248,0.3); background:rgba(56,189,248,0.03); }
-        .arch-branch-label { text-align:center; font-size:0.82rem; font-weight:600; line-height:1.5; }
-        .arch-branch-label small { font-weight:400; color:var(--text-secondary); font-size:0.72rem; }
+        .arch-branch-label { text-align:center; font-size:0.68rem; font-weight:600; line-height:1.4; }
+        .arch-branch-label small { font-weight:400; color:var(--text-secondary); font-size:0.58rem; }
         .safe-label { color:var(--accent-green); }
         .uncertain-label { color:var(--accent-yellow); }
-        .arch-badge { padding:4px 14px; border-radius:20px; font-size:0.68rem; font-weight:700; letter-spacing:0.5px; }
+        .arch-badge { padding:2px 10px; border-radius:16px; font-size:0.55rem; font-weight:700; letter-spacing:0.5px; }
         .fast-badge { background:rgba(34,197,94,0.15); color:var(--accent-green); border:1px solid rgba(34,197,94,0.3); }
         .deep-badge { background:rgba(56,189,248,0.15); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.3); }
-        .arch-deep-row { display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; }
-        .arch-merge { display:flex; flex-direction:column; align-items:center; gap:4px; margin-top:16px; position:relative; }
-        .arch-merge-lines { display:flex; gap:60px; }
-        .merge-line { width:2px; height:20px; background:var(--border); border-radius:1px; }
-        .final-node { box-shadow:0 0 16px rgba(34,197,94,0.2); }
-        @media (max-width:600px) { .arch-fork { flex-direction:column; align-items:center; } .arch-branch { max-width:100%; } }
+        .arch-deep-row { display:flex; align-items:center; gap:5px; justify-content:center; }
+        .arch-merge { display:flex; flex-direction:column; align-items:center; gap:2px; margin-top:8px; position:relative; }
+        .arch-merge-lines { display:flex; gap:40px; }
+        .merge-line { width:2px; height:14px; background:var(--border); border-radius:1px; }
+        .final-node { box-shadow:0 0 10px rgba(34,197,94,0.15); }
+        @media (max-width:800px) { #page-monitor.active { grid-template-columns:1fr; height:auto; overflow:auto; } .arch-fork { flex-direction:column; align-items:center; } .arch-branch { max-width:100%; } }
 
         .explanation-box {
             margin-top: 16px; padding: 16px;
@@ -315,67 +401,94 @@
         .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         @media (max-width: 800px) { .charts-row { grid-template-columns: 1fr; } }
 
-        /* ═══ HOW IT WORKS PAGE ═══ */
-        .hiw-highlight-row { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
-        .hiw-highlight { flex:1; min-width:120px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
-        .hiw-highlight-icon { font-size:1.8rem; font-weight:800; font-family:'Fira Code',monospace; }
-        .hiw-highlight-label { font-size:0.72rem; color:var(--text-secondary); margin-top:4px; text-transform:uppercase; letter-spacing:0.5px; }
+        /* ═══ HOW IT WORKS PAGE — Compact Tabbed ═══ */
+        #page-howitworks { display:none; }
+        #page-howitworks.active { display:flex; flex-direction:column; height:calc(100vh - 90px); overflow:hidden; }
+        .hiw-tabs { display:flex; gap:3px; background:var(--bg-secondary); border-radius:10px; padding:3px; border:1px solid var(--border); flex-shrink:0; flex-wrap:wrap; }
+        .hiw-tab { padding:7px 14px; border:none; border-radius:8px; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:600; font-size:0.72rem; transition:all 0.2s; display:flex; align-items:center; gap:5px; font-family:'Fira Code',monospace; white-space:nowrap; }
+        .hiw-tab.active { background:var(--gradient-1); color:white; box-shadow:var(--neon-blue); }
+        .hiw-tab:hover:not(.active) { color:var(--text-primary); background:var(--bg-card); }
+        .hiw-tab-content { flex:1; overflow-y:auto; overflow-x:hidden; margin-top:12px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+        .hiw-tab-content::-webkit-scrollbar { width:4px; }
+        .hiw-tab-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+        .hiw-tab-pane { display:none; animation:fadeIn 0.3s; }
+        .hiw-tab-pane.active { display:block; }
+        #page-howitworks .card { padding:14px; margin-bottom:10px; }
+        #page-howitworks .card-title { font-size:0.88rem; margin-bottom:10px; }
+
+        /* Compact highlight stats row */
+        .hiw-highlight-row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+        .hiw-highlight { flex:1; min-width:80px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:10px 8px; text-align:center; }
+        .hiw-highlight-icon { font-size:1.2rem; font-weight:800; font-family:'Fira Code',monospace; }
+        .hiw-highlight-label { font-size:0.6rem; color:var(--text-secondary); margin-top:2px; text-transform:uppercase; letter-spacing:0.5px; }
+
+        /* Compact pipeline agents */
         .hiw-pipeline { display:flex; flex-direction:column; gap:0; }
-        .hiw-agent { display:flex; align-items:flex-start; gap:16px; padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--bg-secondary); transition:all 0.3s; }
-        .hiw-agent:hover { border-color:var(--accent-blue); transform:translateX(4px); }
-        .hiw-agent.decision { border-color:var(--accent-yellow); background:rgba(251,191,36,0.05); }
-        .hiw-agent.deep { border-left:3px solid var(--accent-cyan); }
-        .hiw-agent-num { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.9rem; color:#fff; flex-shrink:0; font-family:'Fira Code',monospace; }
-        .hiw-agent-body { flex:1; }
-        .hiw-agent-icon { font-size:1.2rem; float:right; }
-        .hiw-agent-name { font-weight:700; font-size:0.95rem; margin-bottom:4px; }
-        .hiw-agent-desc { font-size:0.82rem; color:var(--text-secondary); }
-        .hiw-agent-badge { display:inline-block; font-size:0.65rem; padding:2px 8px; border-radius:6px; margin-top:6px; font-weight:600; }
+        .hiw-agent { display:flex; align-items:center; gap:10px; padding:6px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-secondary); transition:all 0.2s; }
+        .hiw-agent:hover { border-color:var(--accent-blue); }
+        .hiw-agent.decision { border-color:var(--accent-yellow); background:rgba(251,191,36,0.04); }
+        .hiw-agent.deep { border-left:2px solid var(--accent-cyan); }
+        .hiw-agent-num { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.65rem; color:#fff; flex-shrink:0; font-family:'Fira Code',monospace; }
+        .hiw-agent-body { flex:1; display:flex; align-items:center; gap:8px; }
+        .hiw-agent-icon { font-size:0.85rem; }
+        .hiw-agent-name { font-weight:700; font-size:0.75rem; }
+        .hiw-agent-desc { font-size:0.68rem; color:var(--text-secondary); }
+        .hiw-agent-badge { display:inline-block; font-size:0.55rem; padding:1px 6px; border-radius:4px; margin-left:6px; font-weight:600; }
         .hiw-agent-badge.decision { background:rgba(251,191,36,0.15); color:var(--accent-yellow); }
         .hiw-agent-badge.deep { background:rgba(6,182,212,0.15); color:var(--accent-cyan); }
-        .hiw-agent-arrow { text-align:center; color:var(--text-secondary); font-size:0.9rem; padding:4px 0; opacity:0.4; }
-        .hiw-steps { display:flex; flex-direction:column; gap:12px; }
-        .hiw-step { display:flex; gap:14px; padding:14px; border-radius:12px; background:var(--bg-secondary); border:1px solid var(--border); transition:all 0.3s; }
+        .hiw-agent-arrow { text-align:center; color:var(--text-secondary); font-size:0.6rem; padding:1px 0; opacity:0.3; }
+
+        /* Compact NLP steps */
+        .hiw-steps { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+        .hiw-step { display:flex; gap:8px; padding:8px; border-radius:8px; background:var(--bg-secondary); border:1px solid var(--border); transition:all 0.2s; }
         .hiw-step:hover { border-color:var(--accent-cyan); }
-        .hiw-step-num { width:32px; height:32px; border-radius:50%; background:var(--accent-cyan); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0; font-family:'Fira Code',monospace; }
+        .hiw-step-num { width:22px; height:22px; border-radius:50%; background:var(--accent-cyan); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.65rem; flex-shrink:0; font-family:'Fira Code',monospace; }
         .hiw-step-content { flex:1; }
-        .hiw-step-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
-        .hiw-step-icon { font-size:1rem; }
-        .hiw-step-name { font-weight:700; font-size:0.9rem; }
-        .hiw-step-status { margin-left:auto; }
-        .hiw-step-desc { font-size:0.8rem; color:var(--text-secondary); margin-bottom:8px; }
-        .hiw-step-example { background:var(--bg-primary); border-radius:8px; padding:10px 12px; }
-        .hiw-step-io { font-size:0.78rem; color:var(--text-secondary); margin:2px 0; }
-        .hiw-io-label { font-weight:600; color:var(--accent-cyan); width:40px; display:inline-block; }
-        .hiw-step-io code { font-family:'Fira Code',monospace; color:var(--text-primary); font-size:0.75rem; background:rgba(56,189,248,0.1); padding:2px 6px; border-radius:4px; }
-        .hiw-feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
-        .hiw-feature-item { background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:14px; }
-        .hiw-feature-group { font-weight:700; font-size:0.85rem; color:var(--accent-yellow); margin-bottom:6px; }
-        .hiw-feature-names { margin-bottom:6px; }
-        .hiw-feature-names code { font-family:'Fira Code',monospace; font-size:0.72rem; background:rgba(167,139,250,0.1); padding:2px 6px; border-radius:4px; color:var(--accent-purple); margin-right:4px; }
-        .hiw-feature-desc { font-size:0.78rem; color:var(--text-secondary); }
-        .hiw-threshold { margin-top:12px; }
-        .hiw-threshold-bar { display:flex; border-radius:12px; overflow:hidden; margin-bottom:16px; }
-        .hiw-zone { flex:1; padding:16px 12px; text-align:center; font-size:0.82rem; font-weight:700; }
+        .hiw-step-header { display:flex; align-items:center; gap:4px; margin-bottom:2px; }
+        .hiw-step-icon { font-size:0.75rem; }
+        .hiw-step-name { font-weight:700; font-size:0.72rem; }
+        .hiw-step-status { margin-left:auto; font-size:0.65rem; }
+        .hiw-step-desc { font-size:0.65rem; color:var(--text-secondary); margin-bottom:4px; }
+        .hiw-step-example { background:var(--bg-primary); border-radius:6px; padding:4px 6px; }
+        .hiw-step-io { font-size:0.62rem; color:var(--text-secondary); margin:1px 0; }
+        .hiw-io-label { font-weight:600; color:var(--accent-cyan); width:32px; display:inline-block; font-size:0.6rem; }
+        .hiw-step-io code { font-family:'Fira Code',monospace; color:var(--text-primary); font-size:0.6rem; background:rgba(56,189,248,0.1); padding:1px 4px; border-radius:3px; }
+
+        /* Compact features */
+        .hiw-feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+        .hiw-feature-item { background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; padding:8px; }
+        .hiw-feature-group { font-weight:700; font-size:0.72rem; color:var(--accent-yellow); margin-bottom:3px; }
+        .hiw-feature-names { margin-bottom:3px; }
+        .hiw-feature-names code { font-family:'Fira Code',monospace; font-size:0.6rem; background:rgba(167,139,250,0.1); padding:1px 4px; border-radius:3px; color:var(--accent-purple); margin-right:3px; }
+        .hiw-feature-desc { font-size:0.62rem; color:var(--text-secondary); }
+
+        /* Compact threshold */
+        .hiw-threshold { margin-top:6px; }
+        .hiw-threshold-bar { display:flex; border-radius:10px; overflow:hidden; margin-bottom:10px; }
+        .hiw-zone { flex:1; padding:10px 8px; text-align:center; font-size:0.72rem; font-weight:700; }
         .hiw-zone.safe { background:rgba(34,197,94,0.15); color:var(--accent-green); }
         .hiw-zone.uncertain { background:rgba(251,191,36,0.15); color:var(--accent-yellow); }
         .hiw-zone.phishing { background:rgba(239,68,68,0.15); color:var(--accent-red); }
-        .hiw-zone small { font-weight:400; font-size:0.72rem; opacity:0.8; }
-        .hiw-threshold-legend { display:flex; flex-direction:column; gap:8px; font-size:0.82rem; color:var(--text-secondary); }
-        .hiw-arch { display:flex; flex-direction:column; align-items:center; gap:12px; padding:16px 0; }
-        .hiw-arch-box { background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:12px 20px; text-align:center; font-size:0.82rem; font-weight:600; min-width:200px; }
+        .hiw-zone small { font-weight:400; font-size:0.6rem; opacity:0.8; }
+        .hiw-threshold-legend { display:flex; flex-direction:column; gap:4px; font-size:0.72rem; color:var(--text-secondary); }
+
+        /* Compact arch diagram */
+        .hiw-arch { display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0; }
+        .hiw-arch-box { background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; padding:8px 14px; text-align:center; font-size:0.72rem; font-weight:600; min-width:160px; }
         .hiw-arch-box.input { border-color:var(--accent-blue); color:var(--accent-blue); }
         .hiw-arch-box.fusion { border-color:var(--accent-purple); color:var(--accent-purple); }
         .hiw-arch-box.output { border-color:var(--accent-green); color:var(--accent-green); }
-        .hiw-arch-box small { font-weight:400; font-size:0.72rem; color:var(--text-secondary); }
-        .hiw-arch-split { display:flex; gap:24px; width:100%; justify-content:center; flex-wrap:wrap; }
-        .hiw-arch-branch { display:flex; flex-direction:column; gap:8px; align-items:center; padding:16px; border:1px dashed var(--border); border-radius:12px; flex:1; min-width:200px; }
+        .hiw-arch-box small { font-weight:400; font-size:0.6rem; color:var(--text-secondary); }
+        .hiw-arch-split { display:flex; gap:16px; width:100%; justify-content:center; }
+        .hiw-arch-branch { display:flex; flex-direction:column; gap:5px; align-items:center; padding:10px; border:1px dashed var(--border); border-radius:10px; flex:1; min-width:160px; }
         .hiw-arch-branch.glove { border-color:rgba(34,197,94,0.3); }
         .hiw-arch-branch.bilstm { border-color:rgba(56,189,248,0.3); }
-        .hiw-stacking { margin-top:12px; }
-        .hiw-stack-row { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
-        .hiw-stack-item { flex:1; min-width:180px; padding:16px; border-radius:12px; border:2px solid var(--border); text-align:center; font-size:0.85rem; font-weight:600; background:var(--bg-secondary); }
-        .hiw-stack-meta { background:var(--gradient-1); color:#fff; padding:16px; border-radius:12px; text-align:center; font-weight:700; font-size:0.9rem; }
+
+        /* Compact stacking */
+        .hiw-stacking { margin-top:6px; }
+        .hiw-stack-row { display:flex; gap:10px; justify-content:center; }
+        .hiw-stack-item { flex:1; min-width:140px; padding:10px; border-radius:10px; border:2px solid var(--border); text-align:center; font-size:0.75rem; font-weight:600; background:var(--bg-secondary); }
+        .hiw-stack-meta { background:var(--gradient-1); color:#fff; padding:10px; border-radius:10px; text-align:center; font-weight:700; font-size:0.78rem; }
     </style>
 </head>
 <body>
@@ -408,226 +521,195 @@
     <main class="main">
         <!-- ═══════ PREDICT PAGE ═══════ -->
         <div id="page-predict" class="page active">
-            <div class="card">
-                <div class="card-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                    E-Posta Phishing Analizi
+            <!-- Sol: Form -->
+            <div class="predict-form-col">
+                <div class="card" style="flex:1;display:flex;flex-direction:column">
+                    <div class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        E-Posta Analizi
+                    </div>
+                    <div class="form-group">
+                        <label>Gönderen (opsiyonel)</label>
+                        <input type="text" id="sender" placeholder="security@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>E-Posta Konusu *</label>
+                        <input type="text" id="subject" placeholder="URGENT: Verify your account" required>
+                    </div>
+                    <div class="form-group" style="flex:1;display:flex;flex-direction:column">
+                        <label>E-Posta İçeriği *</label>
+                        <textarea id="body" placeholder="Dear Customer, Your account will be suspended..." style="flex:1"></textarea>
+                    </div>
+                    <button class="btn-primary" id="analyzeBtn" onclick="analyzeEmail()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        Analiz Et
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label>Gönderen (opsiyonel)</label>
-                    <input type="text" id="sender" placeholder="security@example.com">
-                </div>
-                <div class="form-group">
-                    <label>E-Posta Konusu *</label>
-                    <input type="text" id="subject" placeholder="URGENT: Verify your account" required>
-                </div>
-                <div class="form-group">
-                    <label>E-Posta İçeriği *</label>
-                    <textarea id="body" placeholder="Dear Customer, Your account will be suspended..."></textarea>
-                </div>
-                <button class="btn-primary" id="analyzeBtn" onclick="analyzeEmail()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                    Analiz Et
-                </button>
             </div>
-
-            <div id="resultPanel" class="result-panel" style="display:none">
-                <div id="verdictBanner" class="verdict-banner">
-                    <div class="verdict-icon" id="verdictIcon"></div>
-                    <div class="verdict-text" id="verdictText"></div>
-                    <div class="verdict-sub" id="verdictSub"></div>
+            <!-- Sağ: Sonuçlar -->
+            <div class="predict-result-col">
+                <div id="predictEmpty" class="predict-empty">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <p>E-posta bilgilerini girin ve<br><strong>Analiz Et</strong>'e tıklayın</p>
                 </div>
-                <div class="card">
-                    <div class="card-title">📊 Skor Detayları</div>
-                    <div class="metrics-grid" id="scoreMetrics"></div>
-                </div>
-                <div class="card">
-                    <div class="card-title">🔗 Canlı Pipeline Akışı</div>
-                    <div id="pipelineAnim"></div>
-                </div>
-                <div class="charts-row">
-                    <div class="card">
-                        <div class="card-title">🔍 Feature Importance (SHAP)</div>
-                        <div id="shapChart"></div>
+                <div id="resultPanel" class="result-panel" style="display:none">
+                    <div id="verdictBanner" class="verdict-banner">
+                        <div class="verdict-icon" id="verdictIcon"></div>
+                        <div class="verdict-text" id="verdictText"></div>
+                        <div class="verdict-sub" id="verdictSub"></div>
                     </div>
                     <div class="card">
-                        <div class="card-title">📊 Stilometrik Radar Profili</div>
-                        <div class="radar-container">
-                            <canvas id="radarCanvas"></canvas>
+                        <div class="card-title">📊 Skor Detayları</div>
+                        <div class="metrics-grid" id="scoreMetrics"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🔗 Pipeline Akışı</div>
+                        <div id="pipelineAnim"></div>
+                    </div>
+                    <div class="charts-row">
+                        <div class="card">
+                            <div class="card-title">🔍 SHAP</div>
+                            <div id="shapChart"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">📊 Radar Profili</div>
+                            <div class="radar-container">
+                                <canvas id="radarCanvas"></canvas>
+                            </div>
                         </div>
                     </div>
+                    <div class="explanation-box" id="explanationBox"></div>
                 </div>
-                <div class="explanation-box" id="explanationBox"></div>
             </div>
         </div>
 
         <!-- ═══════ EVALUATE PAGE ═══════ -->
         <div id="page-evaluate" class="page">
-            <div class="card">
-                <div class="card-title">📊 Model Performans Değerlendirmesi</div>
-                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()" style="cursor:pointer">
-                    <input type="file" id="csvFile" accept=".csv" onchange="evaluateCSV(this)">
-                    <div style="margin-bottom:12px">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" width="48" height="48"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" x2="12" y1="18" y2="12"/><line x1="9" x2="15" y1="15" y2="15"/></svg>
+            <!-- SOL KOLON: CSV Upload + Metrikler -->
+            <div class="eval-left-col">
+                <div class="card">
+                    <div class="card-title">📊 Performans Değerlendirmesi</div>
+                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFile').click()" style="cursor:pointer">
+                        <input type="file" id="csvFile" accept=".csv" onchange="evaluateCSV(this)">
+                        <div style="display:flex;align-items:center;gap:10px;justify-content:center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="1.5" width="28" height="28"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" x2="12" y1="18" y2="12"/><line x1="9" x2="15" y1="15" y2="15"/></svg>
+                            <div style="text-align:left">
+                                <div style="font-weight:600;font-size:0.82rem" id="uploadLabel">CSV Dosyası Yükle</div>
+                                <div style="color:var(--text-secondary);font-size:0.68rem;margin-top:2px"><code style="font-size:0.62rem">subject, body, label</code></div>
+                            </div>
+                        </div>
                     </div>
-                    <div style="font-weight:600" id="uploadLabel">CSV Dosyası Yükle</div>
-                    <div style="color:var(--text-secondary);font-size:0.82rem;margin-top:8px">
-                        Sütunlar: <code>subject, body, label</code> (label: 0=safe, 1=phishing)
+                    <div id="evalLoading" class="loading" style="display:none;padding:10px">
+                        <div class="spinner" style="width:24px;height:24px"></div>
+                        <div style="font-size:0.75rem">Değerlendiriliyor...</div>
                     </div>
                 </div>
-                <div id="evalLoading" class="loading" style="display:none">
-                    <div class="spinner"></div>
-                    <div>Değerlendiriliyor...</div>
+                <div class="eval-metrics" id="evalResults">
+                    <div class="eval-card" style="border-top-color:#3b82f6"><div class="val" id="m-accuracy" style="color:#3b82f6">—</div><div class="lbl">Accuracy</div><div class="eval-desc">Doğruluk</div></div>
+                    <div class="eval-card" style="border-top-color:#10b981"><div class="val" id="m-f1" style="color:#10b981">—</div><div class="lbl">F1-Score</div><div class="eval-desc">Prec+Rec</div></div>
+                    <div class="eval-card" style="border-top-color:#8b5cf6"><div class="val" id="m-auc" style="color:#8b5cf6">—</div><div class="lbl">ROC-AUC</div><div class="eval-desc">Kalite</div></div>
+                    <div class="eval-card" style="border-top-color:#f59e0b"><div class="val" id="m-prauc" style="color:#f59e0b">—</div><div class="lbl">PR-AUC</div><div class="eval-desc">PR Eğrisi</div></div>
+                    <div class="eval-card" style="border-top-color:#06b6d4"><div class="val" id="m-precision" style="color:#06b6d4">—</div><div class="lbl">Precision</div><div class="eval-desc">Hassasiyet</div></div>
+                    <div class="eval-card" style="border-top-color:#ec4899"><div class="val" id="m-recall" style="color:#ec4899">—</div><div class="lbl">Recall</div><div class="eval-desc">Yakalama</div></div>
+                    <div class="eval-card" style="border-top-color:#14b8a6"><div class="val" id="m-mcc" style="color:#14b8a6">—</div><div class="lbl">MCC</div><div class="eval-desc">Korelasyon</div></div>
+                    <div class="eval-card" style="border-top-color:#ef4444"><div class="val" id="m-fnr" style="color:#ef4444">—</div><div class="lbl">FNR</div><div class="eval-desc">Kaçırma</div></div>
+                    <div class="eval-card" style="border-top-color:#a855f7"><div class="val" id="m-latency" style="color:#a855f7">—</div><div class="lbl">Latency</div><div class="eval-desc">Süre</div></div>
+                    <div class="eval-card" style="border-top-color:#f97316"><div class="val" id="m-throughput" style="color:#f97316">—</div><div class="lbl">Throughput</div><div class="eval-desc">İstek/sn</div></div>
                 </div>
             </div>
-
-            <!-- Metrik kartları her zaman görünür -->
-            <div class="eval-metrics" id="evalResults">
-                <div class="eval-card" style="border-top-color:#3b82f6">
-                    <div class="val" id="m-accuracy" style="color:#3b82f6">—</div>
-                    <div class="lbl">Accuracy</div>
-                    <div class="eval-desc">Genel doğruluk oranı</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#10b981">
-                    <div class="val" id="m-f1" style="color:#10b981">—</div>
-                    <div class="lbl">F1-Score</div>
-                    <div class="eval-desc">Precision + Recall dengesi</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#8b5cf6">
-                    <div class="val" id="m-auc" style="color:#8b5cf6">—</div>
-                    <div class="lbl">ROC-AUC</div>
-                    <div class="eval-desc">Sınıflandırma kalitesi</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#f59e0b">
-                    <div class="val" id="m-prauc" style="color:#f59e0b">—</div>
-                    <div class="lbl">PR-AUC</div>
-                    <div class="eval-desc">Precision-Recall eğrisi altı alan</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#06b6d4">
-                    <div class="val" id="m-precision" style="color:#06b6d4">—</div>
-                    <div class="lbl">Precision</div>
-                    <div class="eval-desc">Phishing hassasiyeti</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#ec4899">
-                    <div class="val" id="m-recall" style="color:#ec4899">—</div>
-                    <div class="lbl">Recall</div>
-                    <div class="eval-desc">Phishing yakalama oranı</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#14b8a6">
-                    <div class="val" id="m-mcc" style="color:#14b8a6">—</div>
-                    <div class="lbl">MCC</div>
-                    <div class="eval-desc">Matthews korelasyon katsayısı</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#ef4444">
-                    <div class="val" id="m-fnr" style="color:#ef4444">—</div>
-                    <div class="lbl">FNR</div>
-                    <div class="eval-desc">Kaçan phishing oranı</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#a855f7">
-                    <div class="val" id="m-latency" style="color:#a855f7">—</div>
-                    <div class="lbl">Avg Latency</div>
-                    <div class="eval-desc">Ortalama işlem süresi</div>
-                </div>
-                <div class="eval-card" style="border-top-color:#f97316">
-                    <div class="val" id="m-throughput" style="color:#f97316">—</div>
-                    <div class="lbl">Throughput</div>
-                    <div class="eval-desc">Saniyedeki istek sayısı</div>
-                </div>
-            </div>
-
-            <!-- ─── Veri Seti Analiz Havuzu ─── -->
-            <div class="card">
-                <div class="ds-pool-header">
-                    <div class="ds-pool-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" width="18" height="18"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-                        Veri Seti Analiz Havuzu
-                        <span class="ds-pool-badge" id="dsPoolCount">6 veri seti</span>
+            <!-- SAĞ KOLON: Veri Seti Havuzu -->
+            <div class="eval-right-col">
+                <div class="card" style="height:100%">
+                    <div class="ds-pool-header">
+                        <div class="ds-pool-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" width="16" height="16"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                            Veri Seti Havuzu
+                            <span class="ds-pool-badge" id="dsPoolCount">6 veri seti</span>
+                        </div>
+                        <label class="ds-add-btn" for="dsNewFile">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 5v14m-7-7h14"/></svg>
+                            Ekle
+                            <input type="file" id="dsNewFile" accept=".csv" style="display:none" onchange="addDatasetToPool(this)">
+                        </label>
                     </div>
-                    <label class="ds-add-btn" for="dsNewFile">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14m-7-7h14"/></svg>
-                        Yeni Veri Seti Ekle
-                        <input type="file" id="dsNewFile" accept=".csv" style="display:none" onchange="addDatasetToPool(this)">
-                    </label>
+                    <div class="ds-grid" id="dsGrid"></div>
                 </div>
-                <div class="ds-grid" id="dsGrid"></div>
             </div>
         </div>
 
         <!-- ═══════ MONITOR PAGE ═══════ -->
         <div id="page-monitor" class="page">
-            <div class="card">
-                <div class="card-title">⚙️ Adaptif Eşik Kontrolü</div>
-                <div class="threshold-control">
-                    <div class="slider-group">
-                        <label style="font-size:0.82rem;color:var(--text-secondary)">T_low (Safe Sınırı)</label>
-                        <div class="slider-val" id="tlowVal">0.35</div>
-                        <input type="range" id="tlowSlider" min="0.1" max="0.5" step="0.01" value="0.35" oninput="updateSlider()">
+            <!-- SOL KOLON -->
+            <div class="monitor-left">
+                <div class="card">
+                    <div class="card-title">⚙️ Adaptif Eşik Kontrolü</div>
+                    <div class="threshold-control">
+                        <div class="slider-group">
+                            <label style="font-size:0.72rem;color:var(--text-secondary)">T_low (Safe)</label>
+                            <div class="slider-val" id="tlowVal">0.35</div>
+                            <input type="range" id="tlowSlider" min="0.1" max="0.5" step="0.01" value="0.35" oninput="updateSlider()">
+                        </div>
+                        <div class="slider-group">
+                            <label style="font-size:0.72rem;color:var(--text-secondary)">T_high (Phishing)</label>
+                            <div class="slider-val" id="thighVal">0.65</div>
+                            <input type="range" id="thighSlider" min="0.5" max="0.9" step="0.01" value="0.65" oninput="updateSlider()">
+                        </div>
+                        <button class="btn-primary" style="width:auto;padding:10px 20px;font-size:0.82rem" onclick="saveThresholds()">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Kaydet
+                        </button>
                     </div>
-                    <div class="slider-group">
-                        <label style="font-size:0.82rem;color:var(--text-secondary)">T_high (Phishing Sınırı)</label>
-                        <div class="slider-val" id="thighVal">0.65</div>
-                        <input type="range" id="thighSlider" min="0.5" max="0.9" step="0.01" value="0.65" oninput="updateSlider()">
-                    </div>
-                    <button class="btn-primary" style="width:auto;padding:14px 28px" onclick="saveThresholds()">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                        Kaydet
-                    </button>
+                </div>
+                <div class="card" id="healthCard">
+                    <div class="card-title">❤️ Sistem Sağlığı</div>
+                    <div id="healthInfo" style="color:var(--text-secondary);font-size:0.78rem">Yükleniyor...</div>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-title">🏗️ Sistem Mimarisi</div>
-                <!-- Dallanmalı Mimari Diyagramı -->
-                <div class="arch-diagram">
-                    <!-- Üst sıra: Adım 1–5 (her zaman çalışır) -->
-                    <div class="arch-row main-row">
-                        <div class="arch-node purple">Adım 1<br><small>Ingestion</small></div>
-                        <div class="arch-arrow">→</div>
-                        <div class="arch-node purple">Adım 2<br><small>Paralel Pre</small></div>
-                        <div class="arch-arrow">→</div>
-                        <div class="arch-node purple">Adım 3<br><small>Stylometric</small></div>
-                        <div class="arch-arrow">→</div>
-                        <div class="arch-node purple">Adım 4<br><small>XGBoost</small></div>
-                        <div class="arch-arrow">→</div>
-                        <div class="arch-node yellow fork-node" id="forkNode">Adım 5<br><small>Threshold</small></div>
-                    </div>
-
-                    <!-- Çatallanma -->
-                    <div class="arch-fork">
-                        <!-- Sol dal: Hızlı yol (kesin kararlar) -->
-                        <div class="arch-branch fast-branch">
-                            <div class="arch-branch-label safe-label">✅ SAFE veya PHISHING<br><small>P ≤ 0.35 veya P ≥ 0.65</small></div>
-                            <div class="arch-arrow-down">↓</div>
-                            <div class="arch-badge fast-badge">HIZLI YOL</div>
+            <!-- SAĞ KOLON -->
+            <div class="monitor-right">
+                <div class="card" style="height:100%">
+                    <div class="card-title">🏗️ Sistem Mimarisi</div>
+                    <div class="arch-diagram">
+                        <div class="arch-row main-row">
+                            <div class="arch-node purple">Adım 1<br><small>Ingestion</small></div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-node purple">Adım 2<br><small>Paralel Pre</small></div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-node purple">Adım 3<br><small>Stylometric</small></div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-node purple">Adım 4<br><small>XGBoost</small></div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-node yellow fork-node" id="forkNode">Adım 5<br><small>Threshold</small></div>
                         </div>
-                        <!-- Sağ dal: Derin yol (belirsiz) -->
-                        <div class="arch-branch deep-branch">
-                            <div class="arch-branch-label uncertain-label">⚠️ UNCERTAIN<br><small>0.35 &lt; P &lt; 0.65</small></div>
-                            <div class="arch-arrow-down">↓</div>
-                            <div class="arch-deep-row">
-                                <div class="arch-node cyan">Adım 6<br><small>NLP</small></div>
-                                <div class="arch-arrow">→</div>
-                                <div class="arch-node cyan">Adım 7<br><small>BiLSTM+GloVe</small></div>
-                                <div class="arch-arrow">→</div>
-                                <div class="arch-node cyan">Adım 8<br><small>Meta-Clf</small></div>
+                        <div class="arch-fork">
+                            <div class="arch-branch fast-branch">
+                                <div class="arch-branch-label safe-label">✅ SAFE / PHISHING<br><small>P ≤ 0.35 veya P ≥ 0.65</small></div>
+                                <div class="arch-arrow-down">↓</div>
+                                <div class="arch-badge fast-badge">HIZLI YOL</div>
                             </div>
-                            <div class="arch-badge deep-badge">DERİN ANALİZ</div>
+                            <div class="arch-branch deep-branch">
+                                <div class="arch-branch-label uncertain-label">⚠️ UNCERTAIN<br><small>0.35 &lt; P &lt; 0.65</small></div>
+                                <div class="arch-arrow-down">↓</div>
+                                <div class="arch-deep-row">
+                                    <div class="arch-node cyan">Adım 6<br><small>NLP</small></div>
+                                    <div class="arch-arrow">→</div>
+                                    <div class="arch-node cyan">Adım 7<br><small>BiLSTM+GloVe</small></div>
+                                    <div class="arch-arrow">→</div>
+                                    <div class="arch-node cyan">Adım 8<br><small>Meta-Clf</small></div>
+                                </div>
+                                <div class="arch-badge deep-badge">DERİN ANALİZ</div>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Birleşme: Adım 9 -->
-                    <div class="arch-merge">
-                        <div class="arch-merge-lines">
-                            <div class="merge-line left"></div>
-                            <div class="merge-line right"></div>
+                        <div class="arch-merge">
+                            <div class="arch-merge-lines">
+                                <div class="merge-line left"></div>
+                                <div class="merge-line right"></div>
+                            </div>
+                            <div class="arch-arrow-down">↓</div>
+                            <div class="arch-node green final-node">Adım 9<br><small>Sonuç</small></div>
                         </div>
-                        <div class="arch-arrow-down">↓</div>
-                        <div class="arch-node green final-node">Adım 9<br><small>Sonuç</small></div>
                     </div>
                 </div>
-            </div>
-            <div class="card" id="healthCard">
-                <div class="card-title">❤️ Sistem Sağlığı</div>
-                <div id="healthInfo" style="color:var(--text-secondary);font-size:0.88rem">Yükleniyor...</div>
             </div>
         </div>
 
@@ -684,6 +766,8 @@ async function analyzeEmail() {
 }
 
 function showResult(d) {
+    const emptyEl = document.getElementById('predictEmpty');
+    if (emptyEl) emptyEl.style.display = 'none';
     document.getElementById('resultPanel').style.display = 'block';
     const banner = document.getElementById('verdictBanner');
     const icons = { PHISHING: '🚨', SAFE: '✅', UNCERTAIN: '⚠️' };
@@ -709,7 +793,7 @@ function showResult(d) {
         `<div class="metric-card"><div class="metric-value" style="color:${colors[l]}">${v}</div><div class="metric-label">${l}</div></div>`
     ).join('');
 
-    // Pipeline visualization — pipelineAnim ID kullan (pipelineFlow değil!)
+    // Pipeline visualization
     const isFull = d.detection_path === 'FULL_PIPELINE';
     renderPipelineAnimation('pipelineAnim');
     animatePipeline(isFull);
@@ -722,7 +806,9 @@ function showResult(d) {
         renderRadarChart('radarCanvas', d.stylometric_features);
     }
 
-    document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
+    // Scroll result column to top
+    const resultCol = document.querySelector('.predict-result-col');
+    if (resultCol) resultCol.scrollTop = 0;
 }
 
 async function evaluateCSV(input) {
@@ -792,10 +878,8 @@ async function loadHealth() {
             <div class="metrics-grid">
                 <div class="metric-card"><div class="metric-value" style="color:var(--accent-green)">${h.status}</div><div class="metric-label">Durum</div></div>
                 <div class="metric-card"><div class="metric-value">${h.version}</div><div class="metric-label">Versiyon</div></div>
-                <div class="metric-card"><div class="metric-value">${h.xgboost_loaded?'✅':'❌'}</div><div class="metric-label">XGBoost</div></div>
-                <div class="metric-card"><div class="metric-value">${h.lstm_loaded?'✅':'❌'}</div><div class="metric-label">BiLSTM</div></div>
-                <div class="metric-card"><div class="metric-value">${h.tokenizer_loaded?'✅':'❌'}</div><div class="metric-label">Tokenizer</div></div>
-                <div class="metric-card"><div class="metric-value">${h.threshold_low} / ${h.threshold_high}</div><div class="metric-label">Eşikler</div></div>
+                <div class="metric-card"><div class="metric-value">${h.xgboost_loaded?'✅':'❌'} ${h.lstm_loaded?'✅':'❌'} ${h.tokenizer_loaded?'✅':'❌'}</div><div class="metric-label">XGB / LSTM / Tok</div></div>
+                <div class="metric-card"><div class="metric-value">${h.threshold_low}/${h.threshold_high}</div><div class="metric-label">Eşikler</div></div>
             </div>`;
         document.getElementById('statusDot').style.background = 'var(--accent-green)';
         document.getElementById('statusText').textContent = 'Bağlı';
@@ -811,8 +895,8 @@ loadHealth();
 // Pipeline animasyonunu hazırla
 renderPipelineAnimation('pipelineAnim');
 </script>
-<script src="charts.js"></script>
-<script src="howitworks.js"></script>
+<script src="charts.js?v=2"></script>
+<script src="howitworks.js?v=3"></script>
 <script>renderHowItWorks();</script>
 <script>
 // ═══════════════════════════════════════
